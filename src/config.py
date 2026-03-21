@@ -1,15 +1,11 @@
 import os
-import sys
 from dotenv import load_dotenv
-import logging
-from common.common import config_logging
 from dataclasses import dataclass
-import traceback
+import logging
 
-
-# loggers var
 logger = logging.getLogger(__name__)
-config_logging(level=logging.INFO)
+
+
 
 #data class
 @dataclass
@@ -52,22 +48,17 @@ class Config:
             return True
 
         except ValueError as e:
-            logger.warning('Could not load environment variables. Erorr: %s',e)
-            raise ValueError
+            logger.warning('Could not load environment variables. Error: %s',e)
+            raise
 
         except KeyError as e:
-            logger.warning('Could not load environment variables. Erorr: %s',e)
-            raise KeyError
+            logger.warning('Could not load environment variables. Error: %s',e)
+            raise
 
         except (ValueError, TypeError) as e:
-            logger.warning("Error on an attempt to float latitude and longitude. Error: s%.",type(e))
-            raise e
+            logger.warning("Error on an attempt to float latitude and longitude. Error: %s.",type(e))
+            raise
 
-
-        except Exception as e:
-            logger.warning('Could not load environment variables. Error: %s',type(e))
-            traceback.print_exc()
-            raise Exception
 
 
     def _check_for_attributes(self,latitude: str, longitude: str,url: str):
@@ -77,19 +68,14 @@ class Config:
         """
 
         if not all([latitude,longitude,url]):
-            raise ValueError
+            raise
 
         try:
             lat_float = float(latitude)
             lon_float = float(longitude)
 
         except (ValueError, TypeError) as e:
-            logger.warning("Error on an attempt to float latitude and longitude. Error: s%. Latitude: %s, longitude: %s",type(e), longitude,longitude)
+            logger.warning("Error on an attempt to float latitude and longitude. Error: %s. Latitude: %s, longitude: %s",type(e), longitude,longitude)
             raise e
 
         return (lat_float,lon_float,url)
-
-
-
-debug_config = Config()
-debug_appconfig = debug_config.return_AppConfig()
