@@ -1,10 +1,9 @@
 import pandas as pd
-from common.common import config_logging
-import logging
 import traceback
+import logging
 
-logger = logging.getLogger("__name__")
-config_logging(logging.INFO)
+logger = logging.getLogger(__name__)
+
 
 
 class Transform:
@@ -19,9 +18,11 @@ class Transform:
 
         except KeyError as e:
             logger.error(f"Missing expected key in data: {e}")
-            # Здесь мы точно знаем, что в JSON нет ключа 'hourly'
-            return pd.DataFrame()  # или выкидываем ошибку дальше
+            raise KeyError
         except Exception as e:
             logger.warning("Error at transform API (json file) to DataFrame. Type of error: %s",type(e))
             traceback.print_exc()
+            raise Exception
 
+    def fetch_date(self):
+        return self.data["hourly"]["time"][0], self.data["hourly"]["time"][-1]

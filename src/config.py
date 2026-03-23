@@ -13,6 +13,7 @@ class AppConfig:
     latitude: float
     longitude: float
     url: str
+    output_format: str
 
 
 #class config
@@ -33,16 +34,17 @@ class Config:
 
     def _load_config_from_env(self):
         """
-        Loads params from .env: latitude, longitude, url
+        Loads params from .env: latitude, longitude, url, output_format
         :return: object of AppConfig.
         """
         try:
             latitude = os.getenv("LATITUDE")
             longitude = os.getenv("LONGITUDE")
             url = os.getenv("BASE_URL")
-            logger.info("Latitude: %s, Longitude: %s, URL: %s", latitude, longitude,url)
+            output_format = os.getenv("OUTPUT_FORMAT","parquet")
+            logger.info("Latitude: %s, Longitude: %s, URL: %s, Output format: %s", latitude, longitude,url, output_format)
 
-            self.appConfig = AppConfig(*self._check_for_attributes(latitude,longitude,url))
+            self.appConfig = AppConfig(*self._check_for_attributes(latitude,longitude,url,output_format))
 
             logger.info("The object class was successfully created.")
             return True
@@ -61,13 +63,13 @@ class Config:
 
 
 
-    def _check_for_attributes(self,latitude: str, longitude: str,url: str):
+    def _check_for_attributes(self,latitude: str, longitude: str,url: str, output_format:str):
         """
         Validate params for empty
         :return: tuple of params
         """
 
-        if not all([latitude,longitude,url]):
+        if not all([latitude,longitude,url, output_format]):
             raise
 
         try:
@@ -78,4 +80,4 @@ class Config:
             logger.warning("Error on an attempt to float latitude and longitude. Error: %s. Latitude: %s, longitude: %s",type(e), longitude,longitude)
             raise e
 
-        return (lat_float,lon_float,url)
+        return (lat_float,lon_float,url,output_format)

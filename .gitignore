@@ -6,8 +6,10 @@
 #test_files
 test.py
 
+#log_files
+logfiles/*
 #data
-
+data/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
