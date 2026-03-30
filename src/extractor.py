@@ -1,3 +1,4 @@
+from config import AppConfig
 import requests
 import logging
 from tenacity import (
@@ -12,14 +13,12 @@ logger = logging.getLogger(__name__)
 
 
 class Extractor:
-    def __init__(self,forecast):
-        self.url = forecast.url
-        self.lat = forecast.latitude
-        self.lon = forecast.longitude
+    def __init__(self,forecast:AppConfig):
+        self.forecast = forecast
 
-    def get_weather(self,start_date: str, end_date: str):
+    def get_weather(self):
 
-        params = self.get_params(start_date, end_date)
+        params = self.get_params()
 
         try:
             data = self._fetch_with_retry(params)
@@ -30,14 +29,14 @@ class Extractor:
             raise
 
 
-    def get_params(self, start_date: str, end_date: str):
+    def get_params(self):
         params = {
-            "latitude": self.lat,
-            "longitude": self.lon,
-            "start_date": start_date,
-            "end_date": end_date,
-            "hourly": ["temperature_2m", "relative_humidity_2m", "rain", "wind_speed_10m"],
-            "timezone": "UTC"
+            "latitude": self.forecast.latitude,
+            "longitude": self.forecast.longitude,
+            "start_date": self.forecast.start_date,
+            "end_date": self.forecast.end_date,
+            "hourly": self.forecast.hourly,
+            "timezone": self.forecast.timezone
         }
         return params
 
@@ -54,7 +53,7 @@ class Extractor:
         before_sleep=before_sleep_log(logger,logging.WARNING) # type: ignore
     )
     def _fetch_with_retry(self, params):
-        response = requests.get(self.url, params=params, timeout=10)
+        response = requests.get(self.forecast.url, params=params, timeout=10)
         # timeout - ограничивает время ожидания ответа от сервера, в данном случае на 10 секунд, чтобы не ждать ответа от сервиса вечно.
 
         response.raise_for_status()

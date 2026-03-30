@@ -23,6 +23,3 @@ class Transform:
             logger.warning("Error at transform API (json file) to DataFrame. Type of error: %s",type(e))
             traceback.print_exc()
             raise Exception
-
-    def fetch_date(self):
-        return self.data["hourly"]["time"][0], self.data["hourly"]["time"][-1]
