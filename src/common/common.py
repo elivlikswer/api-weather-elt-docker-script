@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 def setup_app_logging(log_level=logging.INFO, log_dir="logfiles", log_file="app.log"):
-    base_dir = Path(__file__).resolve().parent.parent
+    base_dir = Path(__file__).resolve().parent.parent.parent
     path = base_dir / log_dir
     path.mkdir(parents=True, exist_ok=True)
     log_path = path / log_file

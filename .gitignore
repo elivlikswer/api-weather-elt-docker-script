@@ -3,6 +3,10 @@
 #.idea
 .idea/
 
+# Poetry
+.venv
+*.toml
+
 #test_files
 test.py
 
