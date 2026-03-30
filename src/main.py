@@ -14,12 +14,11 @@ config = Config()
 appConfig = config.return_AppConfig()
 
 extractor = Extractor(appConfig)
-data = extractor.get_weather("2026-03-10","2026-03-17")
+data = extractor.get_weather()
 
 transformer = Transform(data)
 df = transformer.dict_to_df()
 
-start_date, end_date = transformer.fetch_date()
 
 loader = Load(appConfig.output_format)
-loader.save(df, start_date, end_date)
+loader.save(df, appConfig.start_date, appConfig.end_date)

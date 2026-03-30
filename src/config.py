@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from dataclasses import dataclass
 import logging
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +15,10 @@ class AppConfig:
     longitude: float
     url: str
     output_format: str
-
+    start_date: str
+    end_date: str
+    hourly: list[str]
+    timezone: str
 
 #class config
 class Config:
@@ -40,11 +44,26 @@ class Config:
         try:
             latitude = os.getenv("LATITUDE")
             longitude = os.getenv("LONGITUDE")
-            url = os.getenv("BASE_URL")
-            output_format = os.getenv("OUTPUT_FORMAT","parquet")
-            logger.info("Latitude: %s, Longitude: %s, URL: %s, Output format: %s", latitude, longitude,url, output_format)
 
-            self.appConfig = AppConfig(*self._check_for_attributes(latitude,longitude,url,output_format))
+            url = os.getenv("BASE_URL")
+
+            output_format = os.getenv("OUTPUT_FORMAT","parquet")
+
+            start_date = os.getenv("START_DATE")
+            end_date = os.getenv("END_DATE")
+
+            hourly_str = os.getenv("HOURLY")
+
+            if hourly_str:
+                hourly = hourly_str.split(",")
+            else:
+                hourly = ["temperature_2m", "relative_humidity_2m", "rain", "wind_speed_10m"]
+
+            timezone = os.getenv("TIMEZONE")
+
+            logger.info("Latitude: %s, Longitude: %s, URL: %s, Output format: %s, Start: %s, End: %s, Hourly: %s, Timezone: %s", latitude, longitude,url, output_format,start_date,end_date,hourly,timezone)
+
+            self.appConfig = AppConfig(*self._check_for_attributes(latitude,longitude,url,output_format,start_date,end_date,hourly,timezone))
 
             logger.info("The object class was successfully created.")
             return True
@@ -63,21 +82,32 @@ class Config:
 
 
 
-    def _check_for_attributes(self,latitude: str, longitude: str,url: str, output_format:str):
+    def _check_for_attributes(self,latitude: str, longitude: str,url: str, output_format:str, start_date:str,end_date:str,hourly:list[str],timezone:str):
         """
         Validate params for empty
         :return: tuple of params
         """
 
-        if not all([latitude,longitude,url, output_format]):
-            raise
+        if not all([latitude, longitude, url, output_format, start_date, end_date, timezone]):
+            raise ValueError("Missing required environment variables")
+
+        if not hourly:
+            raise ValueError("HOURLY must contain at least one parameter")
 
         try:
             lat_float = float(latitude)
             lon_float = float(longitude)
 
-        except (ValueError, TypeError) as e:
+        except TypeError as e:
             logger.warning("Error on an attempt to float latitude and longitude. Error: %s. Latitude: %s, longitude: %s",type(e), longitude,longitude)
             raise e
 
-        return (lat_float,lon_float,url,output_format)
+        try:
+            datetime.strptime(start_date,"%Y-%m-%d")
+            datetime.strptime(end_date,"%Y-%m-%d")
+        except ValueError as e:
+            logger.warning("Invalid date format. Expected YYYY-MM-DD")
+            raise e
+
+
+        return (lat_float,lon_float,url,output_format,start_date,end_date,hourly,timezone)
