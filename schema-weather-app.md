@@ -48,11 +48,18 @@ graph LR
     G -.->|экспоненциальная<br/>задержка| G
     H -.->|сетевая ошибка| G
 
-    style A fill:#c8e6c9
-    style R fill:#ffcdd2
-    style H fill:#fff3e0
-    style K fill:#e8f5e9
-    style O fill:#e1f5fe
-    style P fill:#e1f5fe
-    style Q fill:#f3e5f5
+    classDef default fill:#f9f9f9,stroke:#333,stroke-width:2px,color:#000
+    classDef start fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px,color:#000
+    classDef error fill:#ffcdd2,stroke:#c62828,stroke-width:2px,color:#000
+    classDef api fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000
+    classDef dataframe fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#000
+    classDef data fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000
+    classDef log fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000
+
+    class A start
+    class R error
+    class H api
+    class K dataframe
+    class O,P data
+    class Q log
 ```
